@@ -1,347 +1,218 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<!-- 宣告使用 HTML5；DOCTYPE 是文件類型宣告，不需要結束標籤。 -->
+<html lang="zh-Hant">
+<!-- html 包住整份文件；lang="zh-Hant" 表示主要使用繁體中文。 -->
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>漫步臺中 | 臺中景點探索與智慧導覽</title>
-  <style>
-    :root {
-      --primary: #2c5e55;
-      --primary-light: #448b7e;
-      --accent: #d97736;
-      --bg: #f8faf9;
-      --card-bg: #ffffff;
-      --text-main: #2b2f2d;
-      --text-muted: #66706c;
-      --radius: 14px;
-      --shadow: 0 8px 24px rgba(0,0,0,0.06);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
-    }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text-main);
-      line-height: 1.6;
-    }
-
-    header {
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      color: white;
-      padding: 3.5rem 1.5rem;
-      text-align: center;
-      position: relative;
-    }
-
-    header h1 {
-      font-size: 2.2rem;
-      letter-spacing: 1.5px;
-      margin-bottom: 0.5rem;
-    }
-
-    header p {
-      font-size: 1rem;
-      opacity: 0.9;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem;
-    }
-
-    /* 景點篩選按鈕 */
-    .filter-group {
-      display: flex;
-      justify-content: center;
-      gap: 0.75rem;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-    }
-
-    .filter-btn {
-      border: 1px solid var(--primary);
-      background: transparent;
-      color: var(--primary);
-      padding: 0.5rem 1.25rem;
-      border-radius: 30px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: all 0.25s ease;
-    }
-
-    .filter-btn.active, .filter-btn:hover {
-      background: var(--primary);
-      color: white;
-    }
-
-    /* 景點網格 */
-    .spots-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.75rem;
-    }
-
-    .spot-card {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-    }
-
-    .spot-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.1);
-    }
-
-    .spot-img {
-      height: 190px;
-      background-size: cover;
-      background-position: center;
-      background-color: #ddd;
-    }
-
-    .spot-content {
-      padding: 1.25rem;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .spot-tag {
-      display: inline-block;
-      align-self: flex-start;
-      font-size: 0.75rem;
-      color: var(--accent);
-      background: #fdf3eb;
-      padding: 0.2rem 0.6rem;
-      border-radius: 6px;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-
-    .spot-title {
-      font-size: 1.25rem;
-      margin-bottom: 0.4rem;
-      color: var(--text-main);
-    }
-
-    .spot-desc {
-      font-size: 0.92rem;
-      color: var(--text-muted);
-      flex: 1;
-      margin-bottom: 1rem;
-    }
-
-    .spot-info {
-      font-size: 0.82rem;
-      color: #88928e;
-      border-top: 1px solid #f0f0f0;
-      padding-top: 0.75rem;
-    }
-
-    /* AI 互動小助理區塊 (整合 HW03 概念) */
-    .ai-assistant-section {
-      margin-top: 3.5rem;
-      background: white;
-      border-radius: var(--radius);
-      padding: 2rem;
-      box-shadow: var(--shadow);
-      border: 1px solid #eef2f1;
-    }
-
-    .ai-assistant-section h2 {
-      font-size: 1.4rem;
-      color: var(--primary);
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .chat-box {
-      margin-top: 1rem;
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .chat-box input {
-      flex: 1;
-      padding: 0.75rem 1rem;
-      border: 1px solid #ccd5d2;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      outline: none;
-    }
-
-    .chat-box input:focus {
-      border-color: var(--primary);
-    }
-
-    .chat-box button {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background 0.2s ease;
-    }
-
-    .chat-box button:hover {
-      background: var(--primary-light);
-    }
-
-    .chat-response {
-      margin-top: 1rem;
-      padding: 1rem;
-      background: #f4f7f6;
-      border-radius: 8px;
-      font-size: 0.92rem;
-      color: #3b4441;
-      min-height: 50px;
-    }
-
-    footer {
-      text-align: center;
-      padding: 2.5rem 1rem;
-      color: #8a9692;
-      font-size: 0.85rem;
-    }
-  </style>
+    <!-- head 放網頁資訊；這些資訊不會直接成為頁面中的報導文字。 -->
+    <meta charset="UTF-8">
+    <!-- UTF-8 可正確處理中文；meta 是空元素，不寫結束標籤。 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- viewport 讓行動裝置使用裝置寬度；不代表固定寬度的圖片會自動縮小。 -->
+    <meta name="description" content="走進台中公園，認識百年歷史、湖心亭與日月湖，透過清單、表格、照片和影片閱讀城市故事。">
+    <!-- description 提供網頁摘要；author 標示作者。 -->
+    <meta name="author" content="葉沛欣（學號：HW04_d144605）">
+    <title>台中公園報導｜城市里的百年風景</title>
+    <!-- title 顯示在瀏覽器分頁；與 body 中的 h1 用途不同。 -->
 </head>
-<body>
 
-  <header>
-    <h1>臺中景點探索指南</h1>
-    <p>匯聚歷史文化、自然景觀與當代建築美學，探索臺中的多重樣貌</p>
-  </header>
+<body id="top">
+    <!--
+        第四次作業：一頁式台中公園報導。
+        本範例僅使用 HTML，保留瀏覽器預設呈現，不加入 CSS 或 JavaScript。
+        註解使用「小於符號、驚嘆號、兩個連字號」開始，並以兩個連字號及大於符號結束。
+        註解不會顯示於網頁，但讀者可從原始碼看見，因此不要放私人資料。
+        使用一致的四個空格縮排；成對標籤都明確寫出結束標籤。
+    -->
 
-  <main class="container">
-    <!-- 篩選列 -->
-    <div class="filter-group">
-      <button class="filter-btn active" onclick="filterSpots('all')">全部景點</button>
-      <button class="filter-btn" onclick="filterSpots('culture')">歷史文創</button>
-      <button class="filter-btn" onclick="filterSpots('nature')">自然生態</button>
-      <button class="filter-btn" onclick="filterSpots('modern')">現代藝術</button>
-    </div>
+    <!-- header 是頁首；id="top" 是下方「回到頁首」連結的目的地。 -->
+    <header>
+        <!-- h1 是本頁主標題；h2 用於各章節，依內容階層選用標題。 -->
+        <h1>台中公園：城市里的百年風景</h1>
+        <p>從湖心亭到林蔭步道，一起閱讀台中的城市記憶。</p>
+        <!-- time 的 datetime 以標準日期格式提供機器可讀的日期。 -->
+        <p>作者：葉沛欣（學號：HW04_d144605）｜ 報導整理日期：<time datetime="2026-10-08">2026 年 10 月 8 日</time></p>
+        <p><small>本文為資料整理型教學報導，非現場採訪紀錄。</small></p>
+    </header>
 
-    <!-- 景點卡片展示 -->
-    <div class="spots-grid" id="spotsContainer">
-      <!-- 景點 1 -->
-      <div class="spot-card" data-category="culture">
-        <div class="spot-img" style="background-image: url('https://images.unsplash.com/photo-1590740921094-1a3b53f65651?auto=format&fit=crop&w=700&q=80');"></div>
-        <div class="spot-content">
-          <span class="spot-tag">歷史文創</span>
-          <h3 class="spot-title">歷史建築帝國製糖廠臺中營業所</h3>
-          <p class="spot-desc">見證臺中製糖產業與東區發展的歷史樞紐，現結合湧泉生態公園、在地職人文創與特色展覽，呈現舊時代與現代生態交織的魅力。</p>
-          <div class="spot-info">📍 臺中市東區樂業路30號 | 開放時間：10:00–18:00 (週一休)</div>
-        </div>
-      </div>
+    <!-- nav 表示導覽區；href="#名稱" 會跳到本頁相同 id 的元素。 -->
+    <nav aria-label="報導目錄">
+        <h2>報導目錄</h2>
+        <ul>
+            <li><a href="#intro">一、公園簡介</a></li>
+            <li><a href="#highlights">二、景點特色與散步順序</a></li>
+            <li><a href="#table">三、景點比較表</a></li>
+            <li><a href="#photo">四、湖心亭照片</a></li>
+            <li><a href="#video">五、影音報導</a></li>
+            <li><a href="#sources">六、資料來源</a></li>
+        </ul>
+    </nav>
 
-      <!-- 景點 2 -->
-      <div class="spot-card" data-category="nature">
-        <div class="spot-img" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=700&q=80');"></div>
-        <div class="spot-content">
-          <span class="spot-tag">自然生態</span>
-          <h3 class="spot-title">高美濕地 (Gaomei Wetlands)</h3>
-          <p class="spot-desc">擁有壯麗的落日夕陽與風力發電機景致，木棧道兩側孕育豐富的潮間帶彈塗魚、招潮蟹與候鳥生態，為臺灣最美海岸之一。</p>
-          <div class="spot-info">📍 臺中市清水區大甲溪出海口南側</div>
-        </div>
-      </div>
+    <!-- hr 表示內容主題的分隔，也是沒有結束標籤的空元素。 -->
+    <hr>
 
-      <!-- 景點 3 -->
-      <div class="spot-card" data-category="modern">
-        <div class="spot-img" style="background-image: url('https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=700&q=80');"></div>
-        <div class="spot-content">
-          <span class="spot-tag">現代藝術</span>
-          <h3 class="spot-title">臺中國家歌劇院</h3>
-          <p class="spot-desc">由日本建築大師伊東豊雄操刀設計，以無樑柱「曲牆」結構聞名於世。包含大劇院、空中花園與藝文聚落空間，建築與藝術完美融合。</p>
-          <div class="spot-info">📍 臺中市西屯區惠來路二段101號</div>
-        </div>
-      </div>
+    <!-- main 包住本頁主要內容；article 表示可獨立閱讀的完整報導。 -->
+    <main>
+        <article aria-label="台中公園專題報導">
+            
+            <!-- section 將報導分成有標題的章節；同一頁中的 id 不可重複。 -->
+            <section id="intro">
+                <h2>一、公園簡介</h2>
+                <!-- p 表示段落；strong 強調重要資訊，不用來取代標題。 -->
+                <p>
+                    台中公園位於台中市中心，自 <strong>1903 年 10 月 28 日</strong>開園以來，
+                    成為市民認識城市歷史的重要地點。園內結合湖泊、歷史建築與綠地，
+                    讓人能在城市生活中找到散步與休息的空間。
+                </p>
+                <p>
+                    園內最具代表性的景點是日月湖上的<strong>湖心亭</strong>。
+                    這座建築於 1908 年為慶祝縱貫鐵路全線通車而興建，
+                    後來被指定為市定古蹟，也是台中的代表地標之一。
+                </p>
+                <p>
+                    從湖心亭的建築到望月亭的歷史，台中公園像一份可以慢慢閱讀的城市筆記。
+                    本篇以景點整理與建議散步順序，介紹這座百年公園。
+                </p>
+                <!-- br 僅用於同段文字中需要的換行；不要用很多 br 製造間距。 -->
+                <p>公園地址：台中市北區雙十路一段 65 號。<br>閱讀重點：歷史地標、湖畔景觀與城市綠地。</p>
+                <p><a href="#top">▲ 回到頁首</a></p>
+            </section>
 
-      <!-- 景點 4 -->
-      <div class="spot-card" data-category="culture">
-        <div class="spot-img" style="background-image: url('https://images.unsplash.com/photo-1528728329032-2972f65dfb3f?auto=format&fit=crop&w=700&q=80');"></div>
-        <div class="spot-content">
-          <span class="spot-tag">歷史文創</span>
-          <h3 class="spot-title">審計新村 368 新創聚落</h3>
-          <p class="spot-desc">由舊省政府宿舍改建而成的文創園區，老舊磚牆間充滿了獨立咖啡廳、特色甜點與手作選物市集，洋溢活力文青氣息。</p>
-          <div class="spot-info">📍 臺中市西區民生路368巷</div>
-        </div>
-      </div>
-    </div>
+            <section id="highlights">
+                <h2>二、景點特色與散步順序</h2>
+                <h3>值得留意的三個特色</h3>
+                <!-- ul 是無序清單；li 是個別項目，適合不分先後的資訊。 -->
+                <ul>
+                    <li><strong>歷史建築：</strong>湖心亭連結了公園與縱貫鐵路通車的歷史。</li>
+                    <li><strong>湖畔風景：</strong>日月湖與湖心亭形成公園具有辨識度的景觀。</li>
+                    <li><strong>城市綠地：</strong>園內的草地與樹木提供接近自然的空間。</li>
+                </ul>
 
-    <!-- AI 景點推薦互動助理 (延續 HW03 概念) -->
-    <section class="ai-assistant-section">
-      <h2>✨ 臺中行程智慧助手</h2>
-      <p style="font-size: 0.9rem; color: var(--text-muted);">輸入您的旅遊偏好（例如：「半日文青散步」、「情侶約會看夕陽」），為您即時推薦合適行程！</p>
-      <div class="chat-box">
-        <input type="text" id="userInput" placeholder="請輸入想去的地點類型或行程需求..." />
-        <button onclick="getRecommendation()">查詢建議</button>
-      </div>
-      <div class="chat-response" id="aiResponse">
-        💡 建議：您可以輸入「散步」或「生態」，智慧助理將立即為您量身整理路線！
-      </div>
-    </section>
-  </main>
+                <h3>建議散步順序</h3>
+                <p>以下是本報導規劃的散步建議，並非官方指定路線。</p>
+                <!-- ol 是有序清單；瀏覽器會依 li 的排列產生編號。 -->
+                <ol>
+                    <li>進入公園後，先閱讀現場導覽資訊，確認各景點位置。</li>
+                    <li>走到日月湖畔，觀察湖心亭的外觀與水面倒影。</li>
+                    <li>前往望月亭一帶，閱讀解說牌並認識公園的歷史。</li>
+                    <li>沿園內步道散步，最後在休憩空間整理今日的觀察。</li>
+                </ol>
+                <p><a href="#top">▲ 回到頁首</a></p>
+            </section>
 
-  <footer>
-    <p>HW04 臺中景點探索網頁專案 | 響應式網頁設計與跨平台部署整合</p>
-  </footer>
+            <section id="table">
+                <h2>三、景點比較表</h2>
+                <!--
+                    table 用於呈現資料，不用來排版整個網頁。
+                    本作業維持純 HTML，表格沒有額外的框線樣式。
+                    不使用已過時的 border、cellpadding、cellspacing 屬性。
+                -->
+                <table border="1">
+                    <!-- caption 是表格標題，放在 table 內最前面。 -->
+                    <caption>台中公園三處景點的特色與觀察重點</caption>
+                    <!-- thead 包住表頭；tr 是一橫列；th 是標題儲存格。 -->
+                    <thead>
+                        <tr>
+                            <!-- scope="col" 表示這個 th 是整欄的標題。 -->
+                            <th scope="col">景點名稱</th>
+                            <th scope="col">主要特色</th>
+                            <th scope="col">建議觀察重點</th>
+                        </tr>
+                    </thead>
+                    <!-- tbody 包住資料列；td 是一般資料儲存格。 -->
+                    <tbody>
+                        <tr>
+                            <!-- scope="row" 表示這個 th 是本列的標題。 -->
+                            <th scope="row">湖心亭</th>
+                            <td>建於 1908 年的市定古蹟</td>
+                            <td>亭體外觀及與鐵路通車的歷史關係</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">日月湖</th>
+                            <td>湖心亭所在的湖泊</td>
+                            <td>湖面倒影及湖畔景觀</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">望月亭</th>
+                            <td>與清代臺灣府城相關的歷史遺跡</td>
+                            <td>建築外觀及現場歷史解說</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p><a href="#top">▲ 回到頁首</a></p>
+            </section>
 
-  <script>
-    // 景點分類篩選功能
-    function filterSpots(category) {
-      const cards = document.querySelectorAll('.spot-card');
-      const buttons = document.querySelectorAll('.filter-btn');
+            <section id="photo">
+                <h2>四、湖心亭照片</h2>
+                <!-- figure 將圖片與圖說組成一個單位；figcaption 是圖說。 -->
+                <figure>
+                    <!--
+                        img 是空元素，不寫 /img 結束標籤。
+                        src 指定圖片網址；本範例使用外部圖片，需要連線才能載入。
+                        alt 描述照片內容，圖片未載入時或使用螢幕閱讀器時仍可理解。
+                        width 控制顯示寬度；未指定 height，瀏覽器依原圖比例顯示。
+                    -->
+                    <img
+                        src="https://www.taiwan.net.tw/att/1/big_scenic_spots/pic_A12-00079_10.jpg"
+                        alt="台中公園日月湖上的湖心亭"
+                        width="480">
+                    <figcaption>
+                        湖心亭是台中公園的重要地標。<br>
+                        圖片來源：<a href="https://www.taiwan.net.tw/m1.aspx?id=A12-00079&amp;sNo=0001016" target="_blank" rel="noopener noreferrer">交通部觀光署「臺中公園」景點頁</a>。
+                    </figcaption>
+                </figure>
+                <p><a href="#top">▲ 回到頁首</a></p>
+            </section>
 
-      buttons.forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+            <section id="video">
+                <h2>五、影音報導</h2>
+                <p>透過下方影片認識台中公園與湖心亭，再比較影片畫面與本文介紹的景點。</p>
+                <!--
+                    iframe 將 YouTube 播放器嵌入本頁，需要明確的結束標籤。
+                    src 使用 /embed/影片ID，不是一般的 /watch?v=影片ID 網址。
+                    width、height 設定播放器尺寸；title 說明嵌入內容。
+                    allow 開放所列功能；allowfullscreen 允許全螢幕播放。
+                -->
+                <iframe
+                    width="480"
+                    height="270"
+                    src="https://www.youtube.com/embed/EDfIEohneaA"
+                    title="台中公園湖心亭介紹影片"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allowfullscreen>
+                </iframe>
+                <!-- a 提供一般影片連結；播放器無法播放時仍能前往 YouTube。 -->
+                <p>
+                    若播放器無法播放，請
+                    <a href="https://www.youtube.com/watch?v=EDfIEohneaA" target="_blank" rel="noopener noreferrer">在 YouTube 觀看湖心亭介紹影片（另開分頁）</a>。
+                </p>
+                <p><small>影片為外部作者發布的歷史介紹，現場狀況請以最新官方資訊為準。</small></p>
+                <p><a href="#top">▲ 回到頁首</a></p>
+            </section>
 
-      cards.forEach(card => {
-        if (category === 'all' || card.getAttribute('data-category') === category) {
-          card.style.display = 'flex';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-    }
+            <section id="sources">
+                <h2>六、資料來源</h2>
+                <p>本報導依下列資料整理，散步順序與觀察建議由示範作者規劃。</p>
+                <!--
+                    target="_blank" 另開分頁；rel 保護開啟新頁面的關聯。
+                    網址中的 & 在 HTML 原始碼中寫成 &amp;。
+                -->
+                <ul>
+                    <li><a href="https://www.taiwan.net.tw/m1.aspx?id=A12-00079&amp;sNo=0001016" target="_blank" rel="noopener noreferrer">交通部觀光署：臺中公園（含圖片來源）</a></li>
+                    <li><a href="https://www.tchac.taichung.gov.tw/building?pid=15&amp;uid=33" target="_blank" rel="noopener noreferrer">臺中市文化資產處：中山公園湖心亭</a></li>
+                    <li><a href="https://www.youtube.com/watch?v=EDfIEohneaA" target="_blank" rel="noopener noreferrer">YouTube：台中公園湖心亭介紹影片</a></li>
+                </ul>
+                <p><small>資料整理日期：2026 年 10 月 8 日。</small></p>
+                <p><a href="#top">▲ 回到頁首</a></p>
+            </section>
+        </article>
+    </main>
 
-    // 模擬 AI 助理互動反饋 (可替換為串接實際 API / HW03 模型端點)
-    function getRecommendation() {
-      const input = document.getElementById('userInput').value.trim();
-      const output = document.getElementById('aiResponse');
-
-      if (!input) {
-        output.innerText = "請先輸入您的旅遊偏好或時間安排喔！";
-        return;
-      }
-
-      output.innerHTML = "<em>正在思考行程建議...</em>";
-
-      setTimeout(() => {
-        if (input.includes("夕陽") || input.includes("自然") || input.includes("生態")) {
-          output.innerHTML = `<strong>✨ 推薦行程：</strong>建議傍晚前往【高美濕地】漫步木棧道欣賞全臺最美夕陽，入夜後可至清水市區品嘗米糕或轉往三井 Outlet 摩天輪！`;
-        } else if (input.includes("歷史") || input.includes("文創") || input.includes("文青")) {
-          output.innerHTML = `<strong>✨ 推薦行程：</strong>建議上午走訪【歷史建築帝國製糖廠臺中營業所】欣賞生態湖與糖業策展，下午前往【審計新村】逛逛特色手作小店喝杯手沖咖啡。`;
-        } else if (input.includes("建築") || input.includes("歌劇院") || input.includes("市區")) {
-          output.innerHTML = `<strong>✨ 推薦行程：</strong>推薦走訪西屯七期的【臺中國家歌劇院】，欣賞伊東豊雄曲牆美學，並前往頂樓空中花園拍照散步！`;
-        } else {
-          output.innerHTML = `<strong>✨ 推薦行程：</strong>為您安排【臺中精選一日遊】：上午「帝國製糖廠」歷史散步 ➔ 午後「審計新村」悠閒下午茶 ➔ 傍晚「高美濕地」欣賞金色餘暉！`;
-        }
-      }, 500);
-    }
-  </script>
+    <hr>
+    <!-- footer 是頁尾；來源與作者標示應依自己的作品修改。 -->
+    <footer>
+        <p>第四次 HTML 作業｜台中公園報導</p>
+        <p><a href="#top">回到頁首</a></p>
+    </footer>
 </body>
 </html>
